@@ -17,10 +17,14 @@ class Event extends Model
     protected $table = 'events';
 
     protected $fillable = [
-      'name',
-      'poster',
-      'event_date',
-      'venue_id'
+        'name',
+        'poster',
+        'event_date',
+        'venue_id'
+    ];
+
+    protected $casts = [
+        'event_date' => 'datetime',
     ];
 
     public function venue()

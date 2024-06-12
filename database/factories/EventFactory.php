@@ -28,10 +28,10 @@ class EventFactory extends Factory
         $venue = Venue::inRandomOrder()->first();
 
         return [
-          'name' => fake()->name(),
-          'poster' => fake()->imageUrl(),
-          'event_date' => fake()->dateTime(),
-          'venue_id' => $venue->id,
+            'name' => fake()->name(),
+            'poster' => fake()->image(public_path('storage'), 600, 600, null, false),
+            'event_date' => fake()->dateTime(),
+            'venue_id' => $venue->id,
         ];
     }
 }
