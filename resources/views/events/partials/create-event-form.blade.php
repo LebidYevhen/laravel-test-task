@@ -16,7 +16,7 @@
 
         <div>
             <x-input-label for="name" :value="__('Name')"/>
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full"
+            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $event->name)"
                           required autofocus autocomplete="name"/>
             <x-input-error class="mt-2" :messages="$errors->get('name')"/>
         </div>
@@ -24,6 +24,7 @@
         <div>
             <x-input-label for="poster" :value="__('Poster')"/>
             <x-text-input id="poster" name="poster" type="file" class="mt-1 block w-full"
+                          :value="old('poster', $event->poster)"
                           autofocus autocomplete="poster"/>
             <x-input-error class="mt-2" :messages="$errors->get('poster')"/>
             @if($event->poster)
@@ -34,6 +35,7 @@
         <div>
             <x-input-label for="event_date" :value="__('Event Date')"/>
             <x-text-input id="event_date" name="event_date" type="date" class="mt-1 block w-full"
+                          :value="old('event_date')"
                           required autofocus autocomplete="event_date"/>
             <x-input-error class="mt-2" :messages="$errors->get('event_date')"/>
         </div>
@@ -43,13 +45,12 @@
             <select name="venue_id" id="venue_id" class="mt-1 block w-full"
                     required autofocus>
                 @foreach ($venues as $venue)
-                    <option value="{{ $venue->id }}">
+                    <option value="{{ $venue->id }}" @selected(old('venue_id') == $venue->id)>
                         {{ $venue->name }}
                     </option>
                 @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('venue_id')"/>
-            <div>{{ old('venue_id') }}</div>
         </div>
 
         <div class="flex items-center gap-4">

@@ -1,6 +1,6 @@
-<div id="events-table-container"
-     hx-get="{{ route('events.index') }}"
-     hx-trigger="loadEvents from:body">
+<div id="venue-table-container"
+     hx-get="{{ route('venue.index') }}"
+     hx-trigger="loadVenues from:body">
 
     @php
         $sortField = request('sort_field');
@@ -23,7 +23,7 @@
                 hx-trigger="click"
                 hx-replace-url="true"
                 hx-swap="outerHTML"
-                hx-target="#events-table-container">
+                hx-target="#venue-table-container">
                 {{ __("ID") }}
                 <span class="ml-1" role="img">{{ $sortIcon('id') }}</span>
             </th>
@@ -32,21 +32,9 @@
                 hx-trigger="click"
                 hx-replace-url="true"
                 hx-swap="outerHTML"
-                hx-target="#events-table-container">
+                hx-target="#venue-table-container">
                 {{ __("Name") }}
                 <span class="ml-1" role="img">{{ $sortIcon('name') }}</span>
-            </th>
-            <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                {{ __('Poster') }}
-            </th>
-            <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell"
-                hx-get="{{ $hxGetUrl('event_date') }}"
-                hx-trigger="click"
-                hx-replace-url="true"
-                hx-swap="outerHTML"
-                hx-target="#events-table-container">
-                {{ __('Date') }}
-                <span class="ml-1" role="img">{{ $sortIcon('event_date') }}</span>
             </th>
             <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
                 {{ __('Actions') }}
@@ -55,26 +43,18 @@
         </thead>
 
         <tbody class="block md:table-row-group">
-        @foreach ($events as $event)
+        @foreach ($venues as $venue)
             <tr class="{{ ($loop->index+1) % 2 === 0 ? 'bg-white' : 'bg-gray-300' }} border border-grey-500 md:border-none block md:table-row">
                 <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell"><span
-                            class="inline-block w-1/3 md:hidden font-bold">{{ __('ID') }}</span>{{ $event->id }}
+                            class="inline-block w-1/3 md:hidden font-bold">{{ __('ID') }}</span>{{ $venue->id }}
                 </td>
                 <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell"><span
-                            class="inline-block w-1/3 md:hidden font-bold">{{ __('Name') }}</span>{{ $event->name }}
-                </td>
-                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell"><span
-                            class="inline-block w-1/3 md:hidden font-bold">{{ __('Poster') }}</span><img
-                            class="w-16 h-16"
-                            src="{{ url('storage/'.$event->poster) }}">
-                </td>
-                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell"><span
-                            class="inline-block w-1/3 md:hidden font-bold">{{ __('Date') }}</span>{{ $event->event_date }}
+                            class="inline-block w-1/3 md:hidden font-bold">{{ __('Name') }}</span>{{ $venue->name }}
                 </td>
                 <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell"
                     x-data="{ modalOpen: false }">
                     <span class="inline-block w-1/3 md:hidden font-bold">{{ __('Actions') }}</span>
-                    <a href="{{ route('event.edit', $event->id) }}"
+                    <a href="{{ route('venue.edit', $venue->id) }}"
                        class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 border border-blue-500 rounded">
                         Edit
                     </a>
@@ -88,13 +68,13 @@
                          x-show="modalOpen" x-cloak
                          x-transition>
                         <div class="relative">
-                            <form method="post" action="{{ route('event.destroy', $event->id) }}"
+                            <form method="post" action="{{ route('venue.destroy', $venue->id) }}"
                                   class="inline-block">
                                 @csrf
                                 @method('delete')
                                 <div class="p-6 bg-gray-600">
                                     <p class="text-white mb-3">Are you sure you want to delete
-                                        <b>{{ $event->name }}</b>?</p>
+                                        <b>{{ $venue->name }}</b>?</p>
                                     <a href="#"
                                        class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-500 rounded"
                                        @click.prevent.stop="modalOpen = !modalOpen">
@@ -120,8 +100,9 @@
     <div class="p-3"
          hx-boost="true"
          hx-swap="outerHTML"
-         hx-target="#events-table-container">
-        {{ $events->appends($_GET)->links() }}
+         hx-target="#venue-table-container"
+    >
+        {{ $venues->appends($_GET)->links() }}
     </div>
 
 </div>

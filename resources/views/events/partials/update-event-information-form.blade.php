@@ -51,7 +51,6 @@
                 @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('venue_id')"/>
-            <div>{{ old('venue_id') }}</div>
         </div>
 
         <div class="flex items-center gap-4">

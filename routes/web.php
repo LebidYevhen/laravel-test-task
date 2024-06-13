@@ -22,6 +22,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Venue
     Route::get('/venue', [VenueController::class, 'index'])->name('venue.index');
+    Route::get('/venue/create', [VenueController::class, 'create'])->name('venue.create');
+    Route::post('/venue/create', [VenueController::class, 'store'])->name('venue.store');
+    Route::get('/venue/{venue}', [VenueController::class, 'edit'])->where('id', '[0-9]+')->name('venue.edit');
+    Route::patch('/venue/{venue}', [VenueController::class, 'update'])->where('id', '[0-9]+')->name('venue.update');
+    Route::delete('/venue/{venue}', [VenueController::class, 'destroy'])->where('id', '[0-9]+')->name('venue.destroy');
 });
 
 Route::middleware('auth')->group(function () {

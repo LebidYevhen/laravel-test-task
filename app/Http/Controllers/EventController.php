@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\EventService;
 use App\Http\Requests\{EventCreateRequest, EventUpdateRequest};
 use App\Models\{Event, Venue};
+use App\Services\EventService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\{DB, Redirect};
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\{DB, Redirect};
 use Illuminate\View\View;
-use Intervention\Image\Laravel\Facades\Image;
 
 class EventController extends Controller
 {
@@ -23,7 +21,7 @@ class EventController extends Controller
 
     public function index(Request $request): View
     {
-        $contacts = DB::table('events')
+        $events = DB::table('events')
             ->when($request->has('sort_field'), function ($query) use ($request) {
                 $sortField = $request->input('sort_field');
                 $sortDir = $request->input('sort_dir', 'asc');
@@ -35,11 +33,11 @@ class EventController extends Controller
             $request->header('hx-request')
             && $request->header('hx-target') == 'events-table-container'
         ) {
-            return view('events.partials.table', ['events' => $contacts]);
+            return view('events.partials.table', ['events' => $events]);
         }
 
         return view('events.index', [
-            'events' => $contacts
+            'events' => $events
         ]);
     }
 
@@ -73,9 +71,14 @@ class EventController extends Controller
 
     public function update(EventUpdateRequest $request, Event $event): RedirectResponse
     {
-        $event->poster = $this->eventService->handlePoster($request);
+        $posterName = $this->eventService->handlePoster($request);
 
-        $event->update($request->except('poster'));
+        if (!$posterName) {
+            $event->update($request->validated());
+        } else {
+            $event->poster = $posterName;
+            $event->update($request->except('poster'));
+        }
 
         return Redirect::route('event.edit', [
             'event' => $event->id
