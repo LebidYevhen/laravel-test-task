@@ -44,6 +44,9 @@
             <x-input-label for="venue_id" :value="__('Venue')"/>
             <select name="venue_id" id="venue_id" class="mt-1 block w-full"
                     required autofocus>
+                <option value="">
+                    {{ __('Select venue') }}
+                </option>
                 @foreach ($venues as $venue)
                     <option value="{{ $venue->id }}" @selected(old('venue_id') == $venue->id)>
                         {{ $venue->name }}

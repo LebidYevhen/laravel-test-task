@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{EventController, ProfileController, VenueController};
+use App\Http\Controllers\{EventController, ProfileController, VenueController, WeatherController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -11,6 +11,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    // Weather
+    Route::get('/weather', [WeatherController::class, 'index'])->name('weather.index');
 
     // Events
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
