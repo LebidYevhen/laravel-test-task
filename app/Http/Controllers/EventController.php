@@ -2,20 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\EventService;
 use App\Http\Requests\{EventCreateRequest, EventUpdateRequest};
 use App\Models\{Event, Venue};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\{DB, Redirect};
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Intervention\Image\Laravel\Facades\Image;
 
 class EventController extends Controller
 {
-    public function index(): View
+    private EventService $eventService;
+
+    public function __construct(EventService $eventService)
     {
+        $this->eventService = $eventService;
+    }
+
+    public function index(Request $request): View
+    {
+        $contacts = DB::table('events')
+            ->when($request->has('sort_field'), function ($query) use ($request) {
+                $sortField = $request->input('sort_field');
+                $sortDir = $request->input('sort_dir', 'asc');
+                $query->orderBy($sortField, $sortDir);
+            })
+            ->paginate(10);
+
+        if (
+            $request->header('hx-request')
+            && $request->header('hx-target') == 'events-table-container'
+        ) {
+            return view('events.partials.table', ['events' => $contacts]);
+        }
+
         return view('events.index', [
-            'events' => DB::table('events')->paginate(10)
+            'events' => $contacts
         ]);
     }
 
@@ -31,7 +55,7 @@ class EventController extends Controller
     {
         $validated = $request->validated();
         $event = Event::create($validated);
-        $event->poster = $this->handlePoster($request);
+        $event->poster = $this->eventService->handlePoster($request);
         $event->save();
 
         return Redirect::route('event.edit', [
@@ -49,7 +73,7 @@ class EventController extends Controller
 
     public function update(EventUpdateRequest $request, Event $event): RedirectResponse
     {
-        $event->poster = $this->handlePoster($request);
+        $event->poster = $this->eventService->handlePoster($request);
 
         $event->update($request->except('poster'));
 
@@ -63,20 +87,5 @@ class EventController extends Controller
         $event->delete();
 
         return Redirect::route('events.index')->with('status', 'event-deleted');
-    }
-
-    private function handlePoster($request)
-    {
-        $image = $request->file('poster');
-        $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-
-        $img = Image::read($image->path());
-        if ($img->width() > 1200) {
-            $img->crop(600, 600, position: 'center-center');
-        }
-
-        $img->save(public_path('storage') . '/' . $imageName);
-
-        return $imageName;
     }
 }
